@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: insight-harian
+  namespace: titeny
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: insight
+              image: ghcr.io/coding-skuy/titeny-backend-service:0.1.0
+              env:
+                - name: DATABASE_URL
+                  valueFrom: { secretKeyRef: { name: titeny-secrets, key: DATABASE_URL } }
+                - name: TITENY_API_TOKEN
+                  valueFrom: { secretKeyRef: { name: titeny-secrets, key: TITENY_API_TOKEN } }
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: harga-per-jam
+  namespace: titeny
+spec:
+  schedule: "15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: harga
+              image: ghcr.io/coding-skuy/titeny-backend-service:0.1.0
+          restartPolicy: OnFailure
